@@ -1,0 +1,170 @@
+using System;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+
+namespace CrystalQuest;
+
+
+class Program
+{
+    public static bool IsAnimating = false; // Add a flag to track animation status
+
+    public static async Task AnimateText(string text, int speed = 70)
+    {
+        IsAnimating = true;
+        bool skipAnimation = false;
+
+        foreach (char c in text)
+        {
+            Console.Write(c);
+            if (Console.KeyAvailable)
+            {
+                var key = Console.ReadKey(intercept: true).Key;
+                if (key == ConsoleKey.Tab && IsAnimating == true) // Check if IsAnimating is true before allowing Tab to skip
+                {
+                    skipAnimation = true;
+                    break;
+                }
+                else if (key == ConsoleKey.Spacebar)
+                {
+                    speed = 1;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            await Task.Delay(speed);
+        }
+
+        IsAnimating = false;
+
+        if (skipAnimation)
+        {
+            Console.Clear();
+            Console.WriteLine(text);
+        }
+    }
+
+
+
+
+
+    public static async Task Main(string[] args)
+    {
+
+        // Console Text Colours
+        ConsoleColor magenta = ConsoleColor.Magenta;
+        ConsoleColor blue = ConsoleColor.Blue;
+        ConsoleColor green = ConsoleColor.Green;
+        ConsoleColor red = ConsoleColor.Red;
+
+        // Title Screen
+        Console.Title = " ⋆ ๋࣭ ⭑✧  [ Crystal Quest ] ✧ ⋆ ๋࣭ ⭑";
+        string title = @"
+   ____                _        _    ___                  _   
+  / ___|_ __ _   _ ___| |_ __ _| |  / _ \ _   _  ___  ___| |_ 
+ | |   | '__| | | / __| __/ _` | | | | | | | | |/ _ \/ __| __|
+ | |___| |  | |_| \__ \ || (_| | | | |_| | |_| |  __/\__ \ |_     - Made By Matin 
+  \____|_|   \__, |___/\__\__,_|_|  \__\_\\__,_|\___||___/\__|
+             |___/                                            
+";
+        Console.ForegroundColor = magenta;
+        await AnimateText(title, 1);
+        Console.ResetColor();
+        await AnimateText("\n\n\nMain Menu\n1. Start\n2. Controls\n3. Exit\n");
+        ConsoleKeyInfo userInput = Console.ReadKey(); // Get user input
+
+        if (userInput.KeyChar == '1')
+        {
+            // Option 1: Start the game (Assuming you have a method called StartGame)
+            await Start();
+        }
+        else if (userInput.KeyChar == '2')
+        {
+            // Option 2: Show controls (Assuming you have a method called ShowControls)
+            await Controls();
+        }
+        else if (userInput.KeyChar == '3')
+        {
+            // Option 3: Exit the game
+            Environment.Exit(0);
+        }
+        else
+        {
+            // Invalid input
+            Console.WriteLine("\nInvalid input. Please try again.");
+        }
+
+        Console.Clear();
+    }
+
+    public static async Task Start()
+    {
+        // Game Introduction
+        Console.Clear();
+        string[] Intro = new string[]
+            {
+        "An amazing prophecy has been discovered in a mystical realm.\n",
+        "It foretells of a great odyssey to reclaim the 6 Elemental Crystals that have been lost for centuries.\n",
+        "Each Crystal is protected by a unique elemental guardian with its own set of abilities.\n",
+        "Your responsibility will be to embark on this daring mission and retrieve all 6 crystals.\n",
+        "On your way, you'll encounter enemies and obstacles that dictate the course of your journey.\n",
+        "Press Enter to begin...\n"
+            };
+        foreach (string story in Intro) // loops through each string in the array and prints it out centered.
+            await AnimateText(String.Format("{0," + ((Console.WindowWidth / 2) + (story.Length / 2)) + "}", story));
+        Console.ReadKey();
+        Console.Clear();
+
+        string[] Intro2 = new string[]
+        {
+        "Welcome to Crystal Quest!\n",
+        "You are on a mission to find the 6 elements scattered across the map.\n",
+        "Each element is guarded by a powerful boss that you must defeat in order to retrieve it.\n"
+        };
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        await AnimateText(String.Format("{0," + ((Console.WindowWidth / 2) + (Intro2[0].Length / 2)) + "}", Intro2[0]));
+        Console.ResetColor();
+        for (int i = 1; i < Intro2.Length; i++)
+        {
+            await AnimateText(String.Format("{0," + ((Console.WindowWidth / 2) + (Intro2[i].Length / 2)) + "}", Intro2[i]));
+        }
+
+        // Game
+        while (true)
+        {
+            Console.WriteLine("\nChoose your next action:");
+            Console.WriteLine("1. Visit a location");
+            Console.WriteLine("2. Quit the game");
+
+            string input = Console.ReadLine();
+
+            if (input == "1")
+            {
+                Console.WriteLine("\nChoose a location to visit:");
+                Console.WriteLine("1. Forest");
+                Console.WriteLine("2. Cave");
+                Console.WriteLine("3. Mountain");
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please try again.");
+            }
+        }
+    }
+
+    public static async Task Controls()
+    {
+        Console.Clear();
+        await AnimateText("\nControls:\n");
+        await AnimateText("1. Space to speedup text animations\n");
+        await AnimateText("2. Tab to skip animations\n");
+        await AnimateText("\nPress Enter to Start game...");
+        if (Console.ReadKey().Key == ConsoleKey.Enter)
+        {
+            await Start();
+        }
+    }
+}
+
